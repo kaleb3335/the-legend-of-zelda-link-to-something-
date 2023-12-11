@@ -14,10 +14,14 @@ namespace SpriteKind {
     export const boss = SpriteKind.create()
     export const progctil_2 = SpriteKind.create()
     export const botton = SpriteKind.create()
+    export const bossprojectile = SpriteKind.create()
+    export const mushman = SpriteKind.create()
 }
 sprites.onOverlap(SpriteKind.Enemy, SpriteKind.Player, function (sprite10, otherSprite2) {
     timer.throttle("action", 2000, function () {
         info.changeLifeBy(-1)
+        scene.cameraShake(4, 100)
+        music.play(music.melodyPlayable(music.smallCrash), music.PlaybackMode.InBackground)
     })
 })
 scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile3`, function (sprite62, location5) {
@@ -128,6 +132,11 @@ scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile3`, function (sprite62,
         100,
         false
         )
+    })
+})
+sprites.onOverlap(SpriteKind.mushman, SpriteKind.Player, function (sprite, otherSprite) {
+    timer.throttle("action", 2000, function () {
+        info.changeLifeBy(-1)
     })
 })
 function rats_die () {
@@ -265,6 +274,7 @@ function rats_die () {
         `, SpriteKind.boss)
     tiles.placeOnTile(ricky_the_rat, tiles.getTileLocation(13, 9))
     tiles.placeOnTile(player_1, tiles.getTileLocation(9, 7))
+    statusbar.value = 10000
     controller.moveSprite(player_1, 0, 0)
     story.printDialog(" larnk: were am i ", 80, 90, 50, 150)
     story.printDialog("...", 80, 90, 50, 150)
@@ -891,39 +901,38 @@ scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile4`, function (sprite5, 
     })
 })
 sprites.onOverlap(SpriteKind.Player, SpriteKind.person, function (sprite22, otherSprite4) {
-    if (talk == 0) {
-        game.showLongText("ALFRID: who the hell are you! ", DialogLayout.Bottom)
-        if (controller.A.isPressed()) {
-            game.showLongText("ALFRID: and why the hell were you in my house!", DialogLayout.Bottom)
-        }
-        if (controller.A.isPressed()) {
-            game.showLongText("LARNK: i dont know i woke up here", DialogLayout.Bottom)
-        }
-        if (controller.A.isPressed()) {
-            game.showLongText("LARNK: the last thing i remember is being eaten by ricky my rat and i dont know if it was real or not and i dont know if this real!", DialogLayout.Bottom)
-        }
-        if (controller.A.isPressed()) {
-            game.showLongText("ALFRID: so lets just say if this isent your world then you should find a way out", DialogLayout.Bottom)
-        }
-        if (controller.A.isPressed()) {
-            game.showLongText("LARNK: yes...... thats a great idea", DialogLayout.Bottom)
-        }
-        if (controller.A.isPressed()) {
-            game.showLongText("ALFRID: yeah but it is probably going to be hard", DialogLayout.Bottom)
-        }
-        if (controller.A.isPressed()) {
-            game.showLongText("ALFRID: you should check out the lake", DialogLayout.Bottom)
-        }
-        if (controller.A.isPressed()) {
-            game.showLongText("ALFRID: its down the path and then to the left", DialogLayout.Bottom)
-        }
-        if (controller.A.isPressed()) {
-            game.showLongText("ALFRID: well i have to go bye", DialogLayout.Bottom)
-            sprites.destroy(person_1, effects.spray, 500)
-        }
+    if (level == 2) {
+        game.showLongText("ALFRID: who the heck are you! ", DialogLayout.Bottom)
+        game.showLongText("ALFRID: and why the heck were you in my house!", DialogLayout.Bottom)
+        game.showLongText("LARNK: i dont know i woke up here", DialogLayout.Bottom)
+        game.showLongText("LARNK: the last thing i remember is being eaten by ricky my rat and i dont know if it was real or not and i dont know if this real!", DialogLayout.Bottom)
+        game.showLongText("ALFRID: so lets just say if this isent your world then you should find a way out", DialogLayout.Bottom)
+        game.showLongText("LARNK: yes...... thats a great idea", DialogLayout.Bottom)
+        game.showLongText("ALFRID: yeah but it is probably going to be hard", DialogLayout.Bottom)
+        game.showLongText("ALFRID: you should check out the lake", DialogLayout.Bottom)
+        game.showLongText("ALFRID: its down the path and then to the left", DialogLayout.Bottom)
+        game.showLongText("ALFRID: well i have to go bye", DialogLayout.Bottom)
+        sprites.destroy(person_1, effects.spray, 500)
     }
-    if (talk == 2) {
-    	
+    if (level == 4) {
+        if (talk_2 == 0) {
+            game.showLongText("ALFRID: oh its you again ", DialogLayout.Bottom)
+            game.showLongText("LARNK: is this were you work", DialogLayout.Bottom)
+            game.showLongText("ALFRID:  yes it is and i dont want to do my job ", DialogLayout.Bottom)
+            game.showLongText("ALFRID:   so your going to do it for me ", DialogLayout.Bottom)
+            game.showLongText("ALFRID: so go fined and kill the mushroom dudes", DialogLayout.Bottom)
+            game.showLongText("ALFRID: then come back and i will give you key", DialogLayout.Bottom)
+            talk_2 = 1
+        }
+        if (talk_2 == 1 && mush_killed < 10) {
+            game.showLongText("ALFRID: you have not killed them all", DialogLayout.Bottom)
+        }
+        if (talk_2 == 1 && mush_killed >= 10) {
+            game.showLongText("ALFRID: here is the key ", DialogLayout.Bottom)
+            haskey = 1
+            talk_2 = 2
+            mush_killed = 0
+        }
     }
 })
 function the_real_world () {
@@ -957,10 +966,11 @@ function the_real_world () {
     tiles.placeOnTile(person_3, tiles.getTileLocation(17, 0))
 }
 scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile46`, function (sprite, location) {
+    sprites.destroyAllSpritesOfKind(SpriteKind.Enemy)
     music.stopAllSounds()
     in_boss = 1
     level = 7
-    statusbar = statusbars.create(150, 4, StatusBarKind.EnemyHealth)
+    statusbar = statusbars.create(100, 4, StatusBarKind.EnemyHealth)
     statusbar.setColor(2, 15, 5)
     tiles.setCurrentTilemap(tilemap`level11`)
     ricky_the_rat = sprites.create(img`
@@ -1253,7 +1263,6 @@ sprites.onOverlap(SpriteKind.Projectile, SpriteKind.boss, function (sprite7, oth
         }
         if (projectile2.overlapsWith(rat_prince)) {
             statusbar.value += -1
-            sprites.destroy(projectile2, effects.fire, 1000)
         }
         if (statusbar.value == 0) {
             sprites.destroy(rat_prince, effects.fire, 100)
@@ -1285,14 +1294,13 @@ sprites.onOverlap(SpriteKind.Projectile, SpriteKind.boss, function (sprite7, oth
             })
         }
     }
-    if (level == 6) {
+    if (level == 7) {
         if (projectile.overlapsWith(ricky_the_rat)) {
             statusbar.value += -1
             sprites.destroy(projectile, effects.fire, 100)
         }
         if (projectile2.overlapsWith(ricky_the_rat)) {
             statusbar.value += -1
-            sprites.destroy(projectile2, effects.fire, 1000)
         }
         if (statusbar.value == 0) {
             sprites.destroy(ricky_the_rat, effects.warmRadial, 500)
@@ -1425,11 +1433,13 @@ sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Enemy, function (sprite12, o
         sprites.destroy(otherSprite32, effects.spray, 500)
         info.changeScoreBy(10)
         person_3.follow(player_1, 80)
+        bad_guy_killed += 1
     }
     if (projectile2.overlapsWith(otherSprite32)) {
         sprites.destroy(otherSprite32, effects.warmRadial, 500)
         info.changeScoreBy(20)
         person_3.follow(player_1, 80)
+        bad_guy_killed += 1
     }
 })
 scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile5`, function (sprite11, location9) {
@@ -1617,6 +1627,113 @@ controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
     100,
     character.rule(Predicate.FacingLeft, Predicate.Moving)
     )
+})
+sprites.onOverlap(SpriteKind.Projectile, SpriteKind.mushman, function (sprite, otherSprite) {
+    animation.runImageAnimation(
+    projectile,
+    [img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . 3 3 . . . . . . . 
+        . . . . . . 3 1 1 3 . . . . . . 
+        . . . . . . 3 1 1 3 . . . . . . 
+        . . 3 2 2 3 1 1 1 1 3 2 2 . . . 
+        . . 3 3 1 1 1 1 1 1 1 1 3 3 . . 
+        . . 3 3 1 1 1 1 1 1 1 1 3 3 . . 
+        . . . 3 1 1 1 1 1 1 1 1 3 . . . 
+        . . . . 3 1 1 1 1 1 1 3 . . . . 
+        . . . . 2 1 1 1 1 1 1 2 . . . . 
+        . . . . 2 1 1 3 3 1 1 2 . . . . 
+        . . . . 3 3 3 2 2 2 3 3 . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        `,img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . 2 2 . . . . . . . 
+        . . . . . . 3 1 1 3 . . . . . . 
+        . . . . . 2 1 1 1 1 2 . . . . . 
+        . . . . . 2 1 1 1 1 2 . . . . . 
+        . . . . . . 3 1 1 3 . . . . . . 
+        . . . . . . . 2 2 . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        `,img`
+        . . . . . . 3 3 . . . . . . . . 
+        . . . . . . 3 1 3 . . . . . . . 
+        . . 3 3 . . 3 1 3 . . 3 3 . . . 
+        . . 3 1 3 . 3 1 3 2 3 1 3 . . . 
+        . . . 3 1 3 3 1 3 2 1 3 . . . . 
+        3 3 3 3 2 1 3 1 1 1 3 . . . . . 
+        3 1 1 1 1 1 1 1 1 2 3 3 3 3 3 3 
+        . 3 3 3 2 3 1 1 1 1 1 1 1 1 1 3 
+        . . . . . 2 1 1 1 3 3 2 3 3 3 . 
+        . . . . 3 1 3 1 3 1 2 . . . . . 
+        . . . 3 1 3 2 1 3 3 1 3 . . . . 
+        . . 3 1 3 . 2 1 3 . 3 1 3 . . . 
+        . . 3 3 . . 3 1 3 . . 3 3 . . . 
+        . . . . . . 3 1 3 . . . . . . . 
+        . . . . . . 3 1 3 . . . . . . . 
+        . . . . . . 3 3 . . . . . . . . 
+        `,img`
+        . . 3 3 . . . 3 3 . . . . . . . 
+        . 3 1 1 2 . . 3 1 3 . . 3 3 3 . 
+        . 3 1 1 2 . . 3 1 3 . 3 1 1 3 . 
+        . . 3 2 2 . . 2 1 2 . 2 1 1 3 . 
+        . 3 3 . . . . . 2 2 . 2 2 2 . . 
+        3 1 1 2 2 . . . . . . . 3 3 . . 
+        3 1 1 1 2 . . . . . . 2 1 1 3 3 
+        3 1 1 2 . . . . . . 3 1 1 1 1 3 
+        . 3 2 2 . . . . . . . 2 1 1 3 . 
+        . . . . . . . 2 . . . . 3 3 . . 
+        . . 2 2 2 . 2 1 2 . . 2 2 2 . . 
+        . 3 1 1 2 2 3 1 1 2 . 2 1 1 3 3 
+        3 1 1 1 2 2 1 1 1 2 . 2 1 1 1 3 
+        3 1 1 3 . . 3 1 3 . . . 3 1 1 3 
+        3 3 3 . . . . 3 3 . . . . 3 3 . 
+        . . . . . . . . . . . . . . . . 
+        `,img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . 3 . . . . . 
+        . . . . . 3 . . . . 3 3 . . . . 
+        . . . . 3 3 . . . . . 3 . . . . 
+        . . . . 3 . . . 3 . . . . . . . 
+        . . . . . . . . 3 . . . . . . . 
+        . 3 . . . . . . . . . . 3 . . . 
+        3 3 . . . . . . . . . . 3 3 . . 
+        3 . . . . . . . . . . . . 3 . . 
+        . . . . . . . . . . . . . . . . 
+        . . . 3 . . . 3 . . . . . 3 . . 
+        . . 3 3 . . . 3 . . . . . 3 3 . 
+        . . 3 . . . . 3 . . . . . . 3 . 
+        `],
+    100,
+    false
+    )
+    if (projectile.overlapsWith(otherSprite)) {
+        sprites.destroy(otherSprite, effects.spray, 500)
+        info.changeScoreBy(10)
+        person_3.follow(player_1, 80)
+        mush_killed += 1
+        bad_guy_killed += 1
+    }
+    if (projectile2.overlapsWith(otherSprite)) {
+        sprites.destroy(otherSprite, effects.warmRadial, 500)
+        info.changeScoreBy(20)
+        person_3.follow(player_1, 80)
+        mush_killed += 1
+        bad_guy_killed += 1
+    }
 })
 scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile13`, function (sprite4, location3) {
     timer.throttle("action", 5000, function () {
@@ -2095,6 +2212,14 @@ sprites.onOverlap(SpriteKind.boss, SpriteKind.Player, function (sprite10, otherS
         info.changeLifeBy(-3)
     })
 })
+sprites.onOverlap(SpriteKind.bossprojectile, SpriteKind.Player, function (sprite10, otherSprite2) {
+    timer.throttle("action", 500, function () {
+        info.changeLifeBy(-1)
+        sprites.destroy(sprite10, effects.ashes, 100)
+        scene.cameraShake(4, 100)
+        music.play(music.melodyPlayable(music.smallCrash), music.PlaybackMode.InBackground)
+    })
+})
 function the_center_place () {
     person_1 = sprites.create(img`
         ..............ffffff....
@@ -2405,6 +2530,10 @@ scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile43`, function (sprite, 
     statusbar.setFlag(SpriteFlag.RelativeToCamera, true)
     rat_prince.follow(player_1, 200)
 })
+controller.combos.attachCombo("a b a", function () {
+    game.showLongText("level= " + level, DialogLayout.Bottom)
+    game.showLongText("bad guys killed= " + bad_guy_killed, DialogLayout.Bottom)
+})
 scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile47`, function (sprite, location) {
     tileUtil.loadConnectedMap(MapConnectionKind.Door1)
     if (tileUtil.currentTilemap() == tilemap2) {
@@ -2414,12 +2543,12 @@ scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile47`, function (sprite, 
         tiles.placeOnTile(button, tiles.getTileLocation(11, 6))
         tiles.placeOnTile(person_3, tiles.getTileLocation(1, 6))
         tiles.placeOnTile(bad_guy, tiles.getTileLocation(7, 1))
-        tiles.placeOnTile(bad_guy_2, tiles.getTileLocation(7, 1))
-        tiles.placeOnTile(bad_guy_3, tiles.getTileLocation(7, 1))
+        tiles.placeOnTile(bad_guy_2, tiles.getTileLocation(4, 1))
+        tiles.placeOnTile(bad_guy_3, tiles.getTileLocation(13, 1))
         tiles.placeOnTile(bad_guy_4, tiles.getTileLocation(14, 7))
         tiles.placeOnTile(bad_guy_5, tiles.getTileLocation(7, 15))
-        tiles.placeOnTile(bad_guy_6, tiles.getTileLocation(7, 15))
-        tiles.placeOnTile(bad_guy_7, tiles.getTileLocation(7, 15))
+        tiles.placeOnTile(bad_guy_6, tiles.getTileLocation(4, 15))
+        tiles.placeOnTile(bad_guy_7, tiles.getTileLocation(13, 15))
     } else if (tileUtil.currentTilemap() == tilemap1) {
         level = 4
         tiles.placeOnTile(player_1, tiles.getTileLocation(47, 66))
@@ -2747,6 +2876,7 @@ scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile21`, function (sprite8,
 })
 scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile29`, function (sprite42, location32) {
     multilights.toggleLighting(false)
+    sprites.destroy(person_1)
     bad_guy = sprites.create(img`
         ........................
         .....ffff...............
@@ -2929,6 +3059,55 @@ scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile29`, function (sprite42
         ........................
         ........................
         `, SpriteKind.Enemy)
+    person_1 = sprites.create(img`
+        ....ffffff..............
+        ..ffccccfbf.............
+        .ffccccfbbbf............
+        .fcccffccccf............
+        .ffffbbbbbbcf...........
+        .fbbbbffffcbf...........
+        fffffffcccfff...........
+        ffc44ebf44ccf...........
+        fcc4d41fddcf............
+        .fccc4ddddf.............
+        ..fddc444cf.............
+        ..fddcbbccc.............
+        ...ccfbbcdc.............
+        ...f4444cddc............
+        ....fffffcddc...........
+        .....fff..cddc..........
+        ...........cdc..........
+        ............cc..........
+        ........................
+        ........................
+        ........................
+        ........................
+        ........................
+        ........................
+        `, SpriteKind.person)
+    for (let index = 0; index < 10; index++) {
+        mushroom_man = sprites.create(img`
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . b b b b . . . . 
+            . . . . b b b b 3 3 3 3 b . . . 
+            . c c b 1 1 3 3 3 3 3 3 b b . . 
+            c c c 3 1 1 1 3 3 3 3 3 3 b . . 
+            c b 3 3 3 3 3 3 3 3 3 1 1 b . . 
+            f b b c c c c b 3 3 3 1 1 c . . 
+            f b c c c d d d b b 3 3 3 c c . 
+            f b c b d d d d d d b b 3 3 b c 
+            . c b d d d d d d d d b c 3 3 c 
+            . c d c c d d d d d d c c c 3 f 
+            . f d d d d d c c d d c c c b f 
+            . f d b b b d d d d d c c c b f 
+            . . c d d d d d b f f c b b f f 
+            . . f b d d d b b d d f f f f . 
+            . . f f f c c b d d d f . . . . 
+            `, SpriteKind.mushman)
+        mushroom_man.setVelocity(randint(-100, 100), randint(-100, 100))
+        tiles.placeOnRandomTile(mushroom_man, sprites.castle.tileGrass3)
+        mushroom_man.setBounceOnWall(true)
+    }
     tilemap1 = tilemap`level17`
     tilemap2 = tilemap`level13`
     tiles.setCurrentTilemap(tilemap1)
@@ -2942,6 +3121,7 @@ scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile29`, function (sprite42
     tiles.placeOnTile(bad_guy_6, tiles.getTileLocation(30, 40))
     tiles.placeOnTile(bad_guy_7, tiles.getTileLocation(42, 6))
     tiles.placeOnTile(person_3, tiles.getTileLocation(24, 67))
+    tiles.placeOnTile(person_1, tiles.getTileLocation(1, 63))
     sprites.destroy(house)
     info.stopCountdown()
     scene.setBackgroundImage(img`
@@ -3083,7 +3263,6 @@ scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile29`, function (sprite42
     sprites.destroy(lether_tunic)
     sprites.destroy(reiforst_iron_helmet)
     sprites.destroy(reinforced_iron_chestplate)
-    sprites.destroy(person_1)
     if (talk == 1) {
         sprites.destroy(person_3)
     }
@@ -3136,8 +3315,11 @@ sprites.onOverlap(SpriteKind.person3, SpriteKind.Enemy, function (sprite103, oth
         sprites.destroy(otherSprite23, effects.spray, 500)
         info.changeScoreBy(10)
         person_3.follow(player_1, 80)
+        bad_guy_killed += 1
     }
 })
+let projectile3: Sprite = null
+let mushroom_man: Sprite = null
 let pressed = 0
 let tilemap1: tiles.TileMapData = null
 let tilemap2: tiles.TileMapData = null
@@ -3150,9 +3332,12 @@ let bad_guy_3: Sprite = null
 let bad_guy_2: Sprite = null
 let bad_guy: Sprite = null
 let all_ready_did = 0
+let bad_guy_killed = 0
 let projectile2: Sprite = null
 let projectile: Sprite = null
-let statusbar: StatusBarSprite = null
+let haskey = 0
+let mush_killed = 0
+let talk_2 = 0
 let retry = 0
 let rat: Sprite = null
 let rat_prince: Sprite = null
@@ -3170,6 +3355,7 @@ let sigh: Sprite = null
 let person_2: Sprite = null
 let house: Sprite = null
 let person_1: Sprite = null
+let statusbar: StatusBarSprite = null
 let ricky_the_rat: Sprite = null
 let person_3: Sprite = null
 let in_boss = 0
@@ -3782,6 +3968,48 @@ mp.setPlayerSprite(mp.playerSelector(mp.PlayerNumber.One), sprites.create(img`
     . . . . . . . . . . . . . . . . 
     . . . . . . . . . . . . . . . . 
     `, SpriteKind.Player))
+game.onUpdate(function () {
+    if (player_1.tileKindAt(TileDirection.Right, assets.tile`myTile25`)) {
+        if (controller.A.isPressed()) {
+            if (haskey == 0) {
+                game.showLongText("this door is locked you need a key", DialogLayout.Bottom)
+            }
+            if (haskey == 1) {
+                game.showLongText("you have used they key", DialogLayout.Bottom)
+                tiles.setTileAt(tiles.getTileLocation(48, 66), assets.tile`myTile47`)
+                tiles.setWallAt(tiles.getTileLocation(48, 66), false)
+            }
+        }
+    }
+})
+game.onUpdateInterval(5000, function () {
+    if (level == 7) {
+        ricky_the_rat.setFlag(SpriteFlag.GhostThroughTiles, true)
+        projectile3 = sprites.createProjectileFromSprite(img`
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . 7 7 7 7 7 2 7 . . . . . 
+            . . . 7 7 7 7 7 7 2 7 7 . . . . 
+            . . . 7 2 7 7 7 7 2 7 7 . . . . 
+            . . . 7 2 2 7 2 2 2 7 7 . . . . 
+            . . . 7 7 2 2 2 7 7 7 7 . . . . 
+            . . . 7 7 2 7 2 2 2 7 7 . . . . 
+            . . . 7 7 7 7 2 7 7 7 7 . . . . 
+            . . . 7 7 7 7 2 2 2 7 7 . . . . 
+            . . . . 7 7 7 7 7 7 7 . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            `, ricky_the_rat, 50, 50)
+        projectile3.setKind(SpriteKind.bossprojectile)
+        projectile3.follow(player_1)
+        timer.throttle("action", 2000, function () {
+            ricky_the_rat.setFlag(SpriteFlag.GhostThroughTiles, false)
+        })
+    }
+})
 game.onUpdateInterval(1000, function () {
     if (level == 6) {
         rat = sprites.create(img`
