@@ -1,5 +1,5 @@
 {
-    "name": "the legend onk to something f zelda li",
+    "name": "the legend of zelda link to something",
     "version": "1.0.0",
     "description": "",
     "dependencies": {
@@ -30,7 +30,8 @@
         "arcade-camera-offset": "github:riknoll/arcade-camera-offset#50dcab790691a38799aa99390f9cced2d62fbc21",
         "sound effects": "github:klausw3/pxt-sound-effects#v1.2.0",
         "Achievements": "github:meeeeeeeep1/achievements#4910ba22f82f73691752a6af29ed23215662723a",
-        "arcade-screen-transitions": "github:riknoll/arcade-screen-transitions#v0.0.5"
+        "arcade-screen-transitions": "github:riknoll/arcade-screen-transitions#v0.0.5",
+        "Extra Effects": "github:alexszeto/extra-effects#v3.1.0"
     },
     "files": [
         "main.blocks",
